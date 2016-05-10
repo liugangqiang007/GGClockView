@@ -55,6 +55,10 @@
 - (instancetype)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
     if (self) {
+        if (CGSizeEqualToSize(frame.size, CGSizeZero)) {
+            frame.size = CGSizeMake(80, 25);
+            self.frame = frame;
+        }
         self.timeBackgroundColor = GGDefaultTimeBackgroundColor;
         self.timeTextColor       = GGDefaultTimeTextColor;
         self.colonColor          = GGDefaultColonColor;

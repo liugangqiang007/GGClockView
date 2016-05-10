@@ -19,13 +19,12 @@
     [super viewDidLoad];
 
 
-    GGClockView *clockView = [[GGClockView alloc] initWithTimeBackgroundColor:[UIColor greenColor] timeTextColor:[UIColor blueColor] colonColor:[UIColor redColor] font:[UIFont systemFontOfSize:15]];
-    clockView.frame = CGRectMake(100, 100, 200, 50);
+    GGClockView *clockView = [[GGClockView alloc] init];
+    clockView.frame = CGRectMake(100, 100, 80, 25);
     clockView.time = 100;
     [self.view addSubview:clockView];
     self.clockView = clockView;
 }
-
 
 
 
