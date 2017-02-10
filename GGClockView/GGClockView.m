@@ -28,6 +28,7 @@
 
 @implementation GGClockView
 
+#pragma mark - 初始化方法
 + (instancetype)clockViewWithTimeBackgroundColor:(UIColor *)timeBackgroundColor
                                    timeTextColor:(UIColor *)timeTextColor
                                       colonColor:(UIColor *)colonColor
@@ -68,6 +69,24 @@
     return self;
 }
 
+#pragma mark - action
+- (void)start {
+    
+    [self.timer invalidate];    
+    self.timer = [NSTimer timerWithTimeInterval:1 target:self selector:@selector(timeRun) userInfo:nil repeats:YES];
+    [[NSRunLoop currentRunLoop] addTimer:self.timer forMode:NSRunLoopCommonModes];
+}
+
+- (void)pause {
+    [self.timer invalidate];
+}
+
+- (void)stop {
+    [self.timer invalidate];
+    self.time = 0;
+}
+
+#pragma mark - personal
 - (void)layoutSubviews {
     [super layoutSubviews];
     
@@ -90,18 +109,14 @@
     
 }
 
-#pragma mark - personal
+
 - (void)timeRun {
     
-    if (_time <= 0) {
-        [self.timer invalidate];
-        self.timer = nil;
-        _time = 0;
+    if (self.time > 0) {
+        self.time --;
     } else {
-        _time --;
+        [self.timer invalidate];
     }
-    
-    [self setViewWith:_time];
 }
 
 - (void)setTimeBackgroundColor:(UIColor *)timeBackgroundColor timeTextColor:(UIColor *)timeTextColor colonColor:(UIColor *)colonColor font:(UIFont *)font {
@@ -153,14 +168,6 @@
     _time = time;
     
     [self setViewWith:_time];
-    
-    [self.timer invalidate];
-    self.timer = nil;
-    
-    self.timer = [NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(timeRun) userInfo:nil repeats:YES];
-    [[NSRunLoop currentRunLoop] addTimer:self.timer forMode:NSRunLoopCommonModes];
-    [self.timer fire];
-    
 }
 
 - (void)setTimeBackgroundColor:(UIColor *)timeBackgroundColor {

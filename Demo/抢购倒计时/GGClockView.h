@@ -15,10 +15,8 @@
  ***/
 
 @interface GGClockView : UIView
-
 /// 初始时间
 @property (nonatomic, assign) NSTimeInterval time;
-
 
 /***** 配置 *****/
 /// 文字区域背景色
@@ -37,4 +35,8 @@
 /// 统一设置方法
 - (void)setTimeBackgroundColor:(UIColor *)timeBackgroundColor timeTextColor:(UIColor *)timeTextColor colonColor:(UIColor *)colonColor font:(UIFont *)font;
 
+/***** 控制 *****/
+- (void)start;  // 开始
+- (void)pause;  // 暂停
+- (void)stop;   // 停止
 @end
