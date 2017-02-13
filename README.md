@@ -1,5 +1,5 @@
 # GGClockView
-A countdown view, similar to taobao limited-time sales
+A countdown view, similar to taobao limited-time sales  
 一个倒计时视图，类似于淘宝的限时抢购
 
 
