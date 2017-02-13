@@ -11,7 +11,7 @@
 #define GGDefaultTimeBackgroundColor [UIColor colorWithRed:51/225.0 green:51/225.0 blue:51/225.0 alpha:1]
 #define GGDefaultTimeTextColor       [UIColor whiteColor]
 #define GGDefaultColonColor          [UIColor colorWithRed:51/225.0 green:51/225.0 blue:51/225.0 alpha:1]
-#define GGDefaultFont [UIFont boldSystemFontOfSize:12]
+#define GGDefaultFont                [UIFont boldSystemFontOfSize:12]
 
 @interface GGClockView ()
 
@@ -28,7 +28,7 @@
 
 @implementation GGClockView
 
-#pragma mark - 初始化方法
+#pragma mark - initialization and personal
 + (instancetype)clockViewWithTimeBackgroundColor:(UIColor *)timeBackgroundColor
                                    timeTextColor:(UIColor *)timeTextColor
                                       colonColor:(UIColor *)colonColor
@@ -69,24 +69,6 @@
     return self;
 }
 
-#pragma mark - action
-- (void)start {
-    
-    [self.timer invalidate];    
-    self.timer = [NSTimer timerWithTimeInterval:1 target:self selector:@selector(timeRun) userInfo:nil repeats:YES];
-    [[NSRunLoop currentRunLoop] addTimer:self.timer forMode:NSRunLoopCommonModes];
-}
-
-- (void)pause {
-    [self.timer invalidate];
-}
-
-- (void)stop {
-    [self.timer invalidate];
-    self.time = 0;
-}
-
-#pragma mark - personal
 - (void)layoutSubviews {
     [super layoutSubviews];
     
@@ -109,6 +91,13 @@
     
 }
 
+- (void)setTimeBackgroundColor:(UIColor *)timeBackgroundColor timeTextColor:(UIColor *)timeTextColor colonColor:(UIColor *)colonColor font:(UIFont *)font {
+    
+    self.timeBackgroundColor = timeBackgroundColor;
+    self.timeTextColor       = timeTextColor;
+    self.colonColor          = colonColor;
+    self.font                = font;
+}
 
 - (void)timeRun {
     
@@ -119,16 +108,8 @@
     }
 }
 
-- (void)setTimeBackgroundColor:(UIColor *)timeBackgroundColor timeTextColor:(UIColor *)timeTextColor colonColor:(UIColor *)colonColor font:(UIFont *)font {
-    
-    self.timeBackgroundColor = timeBackgroundColor;
-    self.timeTextColor = timeTextColor;
-    self.colonColor = colonColor;
-    self.font = font;
-}
-
 - (void)setViewWith:(NSTimeInterval)time {
-
+    
     NSInteger hour = time/3600.0;
     NSInteger min  = (time - hour*3600)/60;
     NSInteger sec  = time - hour*3600 - min*60;
@@ -138,29 +119,21 @@
     self.secondLabel.text = [NSString stringWithFormat:@"%02tu",sec];
 }
 
-- (UILabel *)timeLabel {
-    UILabel *label = [[UILabel alloc] init];
+#pragma mark - action
+- (void)start {
     
-    label.backgroundColor = self.timeBackgroundColor;
-    label.textColor       = self.timeTextColor;
-    label.font            = self.font;
-    label.textAlignment   = NSTextAlignmentCenter;
-    
-    label.layer.cornerRadius  = 2;
-    label.layer.masksToBounds = YES;
-    return label;
+    [self.timer invalidate];    
+    self.timer = [NSTimer timerWithTimeInterval:1 target:self selector:@selector(timeRun) userInfo:nil repeats:YES];
+    [[NSRunLoop currentRunLoop] addTimer:self.timer forMode:NSRunLoopCommonModes];
 }
 
-- (UILabel *)colonLabel {
-    UILabel *label = [[UILabel alloc] init];
-    
-    label.backgroundColor = [UIColor clearColor];
-    label.textColor       = self.colonColor;
-    label.font            = self.font;
-    label.text            = @":";
-    label.textAlignment   = NSTextAlignmentCenter;
-    
-    return label;
+- (void)pause {
+    [self.timer invalidate];
+}
+
+- (void)stop {
+    [self.timer invalidate];
+    self.time = 0;
 }
 
 #pragma mark - setter
@@ -203,7 +176,7 @@
     self.rigthColonLabel.font = _font;
 }
 
-#pragma mark - getter
+#pragma mark - lazy
 - (UILabel *)hourLabel {
     if (_hourLabel == nil) {
         UILabel *hourLabel = [self timeLabel];
@@ -249,4 +222,29 @@
     return _rigthColonLabel;
 }
 
+#pragma mark - others
+- (UILabel *)timeLabel {
+    UILabel *label = [[UILabel alloc] init];
+    
+    label.backgroundColor = self.timeBackgroundColor;
+    label.textColor       = self.timeTextColor;
+    label.font            = self.font;
+    label.textAlignment   = NSTextAlignmentCenter;
+    
+    label.layer.cornerRadius  = 2;
+    label.layer.masksToBounds = YES;
+    return label;
+}
+
+- (UILabel *)colonLabel {
+    UILabel *label = [[UILabel alloc] init];
+    
+    label.backgroundColor = [UIColor clearColor];
+    label.textColor       = self.colonColor;
+    label.font            = self.font;
+    label.text            = @":";
+    label.textAlignment   = NSTextAlignmentCenter;
+    
+    return label;
+}
 @end

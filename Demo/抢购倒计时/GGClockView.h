@@ -15,10 +15,11 @@
  ***/
 
 @interface GGClockView : UIView
-/// 初始时间
+
+/****************************** 倒计时初始时间 ******************************/
 @property (nonatomic, assign) NSTimeInterval time;
 
-/***** 配置 *****/
+/****************************** 配置 ******************************/
 /// 文字区域背景色
 @property (nonatomic, strong) UIColor *timeBackgroundColor;
 /// 文字颜色
@@ -28,14 +29,23 @@
 /// 字号
 @property (nonatomic, strong) UIFont  *font;
 
-/// 快速构造方法
-+ (instancetype)clockViewWithTimeBackgroundColor:(UIColor *)timeBackgroundColor timeTextColor:(UIColor *)timeTextColor colonColor:(UIColor *)colonColor font:(UIFont *)font;
-- (instancetype)initWithTimeBackgroundColor:(UIColor *)timeBackgroundColor timeTextColor:(UIColor *)timeTextColor colonColor:(UIColor *)colonColor font:(UIFont *)font;
+/****************************** 快速构造方法 ******************************/
++ (instancetype)clockViewWithTimeBackgroundColor:(UIColor *)timeBackgroundColor
+                                   timeTextColor:(UIColor *)timeTextColor
+                                      colonColor:(UIColor *)colonColor
+                                            font:(UIFont *)font;
+- (instancetype)initWithTimeBackgroundColor:(UIColor *)timeBackgroundColor
+                              timeTextColor:(UIColor *)timeTextColor
+                                 colonColor:(UIColor *)colonColor
+                                       font:(UIFont *)font;
 
-/// 统一设置方法
-- (void)setTimeBackgroundColor:(UIColor *)timeBackgroundColor timeTextColor:(UIColor *)timeTextColor colonColor:(UIColor *)colonColor font:(UIFont *)font;
+/// 统一设置外观
+- (void)setTimeBackgroundColor:(UIColor *)timeBackgroundColor
+                 timeTextColor:(UIColor *)timeTextColor
+                    colonColor:(UIColor *)colonColor
+                          font:(UIFont *)font;
 
-/***** 控制 *****/
+/****************************** 控制 ******************************/
 - (void)start;  // 开始
 - (void)pause;  // 暂停
 - (void)stop;   // 停止
