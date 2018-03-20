@@ -11,9 +11,12 @@
 #define GGDefaultTimeBackgroundColor [UIColor colorWithRed:51/225.0 green:51/225.0 blue:51/225.0 alpha:1]
 #define GGDefaultTimeTextColor       [UIColor whiteColor]
 #define GGDefaultColonColor          [UIColor colorWithRed:51/225.0 green:51/225.0 blue:51/225.0 alpha:1]
-#define GGDefaultFont                [UIFont boldSystemFontOfSize:12]
+#define GGDefaultFont                [UIFont boldSystemFontOfSize:10]
+#define GGDefaultSpacing             6
 
 @interface GGClockView ()
+
+@property (nonatomic, strong) UIView *contentView;
 
 @property (nonatomic, weak) UILabel *hourLabel;
 @property (nonatomic, weak) UILabel *minuteLabel;
@@ -24,6 +27,9 @@
 
 /// 计时器
 @property (nonatomic, strong) NSTimer *timer;
+
+@property (nonatomic, assign) CGFloat labelW;
+
 @end
 
 @implementation GGClockView
@@ -53,44 +59,6 @@
     return self;
 }
 
-- (instancetype)initWithFrame:(CGRect)frame {
-    self = [super initWithFrame:frame];
-    if (self) {
-        if (CGSizeEqualToSize(frame.size, CGSizeZero)) {
-            frame.size = CGSizeMake(80, 25);
-            self.frame = frame;
-        }
-        self.timeBackgroundColor = GGDefaultTimeBackgroundColor;
-        self.timeTextColor       = GGDefaultTimeTextColor;
-        self.colonColor          = GGDefaultColonColor;
-        self.font                = GGDefaultFont;
-        self.time                = 0;
-    }
-    return self;
-}
-
-- (void)layoutSubviews {
-    [super layoutSubviews];
-    
-    CGFloat heigth      = self.frame.size.height;
-    CGFloat colonLabelW = 7.5;
-    CGFloat timeLabelW  = (self.frame.size.width - 2 * colonLabelW) / 3.0;
-    
-    CGFloat hourLabelX       = 0;
-    CGFloat leftColonLabelX  = hourLabelX + timeLabelW;
-    CGFloat minuteLabelX     = leftColonLabelX + colonLabelW;
-    CGFloat rigthColonLabelX = minuteLabelX + timeLabelW;
-    CGFloat secondLabelX     = rigthColonLabelX + colonLabelW;
-    
-    self.hourLabel.frame       = CGRectMake(hourLabelX, 0, timeLabelW, heigth);
-    self.minuteLabel.frame     = CGRectMake(minuteLabelX, 0, timeLabelW, heigth);
-    self.secondLabel.frame     = CGRectMake(secondLabelX, 0, timeLabelW, heigth);
-    
-    self.leftColonLabel.frame  = CGRectMake(leftColonLabelX, 0, colonLabelW, heigth);
-    self.rigthColonLabel.frame = CGRectMake(rigthColonLabelX, 0, colonLabelW, heigth);
-    
-}
-
 - (void)setTimeBackgroundColor:(UIColor *)timeBackgroundColor timeTextColor:(UIColor *)timeTextColor colonColor:(UIColor *)colonColor font:(UIFont *)font {
     
     self.timeBackgroundColor = timeBackgroundColor;
@@ -99,24 +67,88 @@
     self.font                = font;
 }
 
+- (instancetype)initWithFrame:(CGRect)frame {
+    self = [super initWithFrame:frame];
+    if (self) {
+        self.timeBackgroundColor = GGDefaultTimeBackgroundColor;
+        self.timeTextColor       = GGDefaultTimeTextColor;
+        self.colonColor          = GGDefaultColonColor;
+        self.font                = GGDefaultFont;
+        self.isDisplayDay        = NO;
+        self.time                = 0;
+    }
+    return self;
+}
+
+- (void)layoutSubviews {
+    [super layoutSubviews];
+
+    [self.hourLabel sizeToFit];
+    
+    CGFloat hourLabelW = self.hourLabel.frame.size.width + GGDefaultSpacing;
+    if (hourLabelW < self.labelW) {
+        hourLabelW = self.labelW;
+    }
+    CGFloat heigth      = self.frame.size.height;
+    CGFloat colonLabelW = 8;
+    
+    CGFloat hourLabelX       = 0;
+    CGFloat leftColonLabelX  = hourLabelX + hourLabelW;
+    CGFloat minuteLabelX     = leftColonLabelX + colonLabelW;
+    CGFloat rigthColonLabelX = minuteLabelX + self.labelW;
+    CGFloat secondLabelX     = rigthColonLabelX + colonLabelW;
+    
+    self.hourLabel.frame       = CGRectMake(hourLabelX, 0, hourLabelW, heigth);
+    self.minuteLabel.frame     = CGRectMake(minuteLabelX, 0, self.labelW, heigth);
+    self.secondLabel.frame     = CGRectMake(secondLabelX, 0, self.labelW, heigth);
+    
+    self.leftColonLabel.frame  = CGRectMake(leftColonLabelX, 0, colonLabelW, heigth);
+    self.rigthColonLabel.frame = CGRectMake(rigthColonLabelX, 0, colonLabelW, heigth);
+    
+    CGFloat contentW = CGRectGetMaxX(self.secondLabel.frame);
+    
+    switch (self.contentMode) {
+        case GGClockViewContentModeLeft:
+            self.contentView.frame = CGRectMake(0, 0, contentW, self.bounds.size.height);
+            break;
+        case GGClockViewContentModeRight:
+            self.contentView.frame = CGRectMake(self.bounds.size.width - contentW, 0, contentW, self.bounds.size.height);
+            break;
+        case GGClockViewContentModeCenter:
+            self.contentView.frame = CGRectMake((self.bounds.size.width - contentW) / 2, 0, contentW, self.bounds.size.height);
+            break;
+    }
+    
+}
+
 - (void)timeRun {
     
-    if (self.time > 0) {
-        self.time --;
-    } else {
+    if (_time <= 0) {
         [self.timer invalidate];
+        self.timer = nil;
+        _time = 0;
+    } else {
+        _time --;
     }
+    
+    [self setViewWith:_time];
 }
 
 - (void)setViewWith:(NSTimeInterval)time {
     
-    NSInteger hour = time/3600.0;
-    NSInteger min  = (time - hour*3600)/60;
-    NSInteger sec  = time - hour*3600 - min*60;
+    NSInteger day  = self.isDisplayDay ? time/(3600 * 24) : 0;
+    NSInteger hour = (time - day * 3600 * 24) / 3600.0;
+    NSInteger min  = (time - day * 3600 * 24 - hour * 3600) / 60;
+    NSInteger sec  = time - day * 3600 * 24 - hour * 3600 - min * 60;
     
-    self.hourLabel.text   = [NSString stringWithFormat:@"%02tu",hour];
+    if (day > 0) {
+        self.hourLabel.text   = [NSString stringWithFormat:@"%02tu天%02tu", day, hour];
+    } else {
+        self.hourLabel.text   = [NSString stringWithFormat:@"%02tu",hour];
+    }
     self.minuteLabel.text = [NSString stringWithFormat:@"%02tu",min];
     self.secondLabel.text = [NSString stringWithFormat:@"%02tu",sec];
+    [self layoutSubviews];
 }
 
 #pragma mark - action
@@ -174,13 +206,26 @@
     self.secondLabel.font     = _font;
     self.leftColonLabel.font  = _font;
     self.rigthColonLabel.font = _font;
+    
+    CGRect rect = [@"00" boundingRectWithSize:CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX) options:NSStringDrawingUsesLineFragmentOrigin attributes:[NSDictionary dictionaryWithObjectsAndKeys:self.minuteLabel.font,NSFontAttributeName, nil] context:nil];
+    self.labelW = rect.size.width + GGDefaultSpacing;
 }
 
 #pragma mark - lazy
+- (UIView *)contentView {
+    if (_contentView == nil) {
+        UIView *contentView = [[UIView alloc] init];
+        [self addSubview:contentView];
+        _contentView = contentView;
+    }
+    return _contentView;
+}
+
+
 - (UILabel *)hourLabel {
     if (_hourLabel == nil) {
         UILabel *hourLabel = [self timeLabel];
-        [self addSubview:hourLabel];
+        [self.contentView addSubview:hourLabel];
         _hourLabel = hourLabel;
     }
     return _hourLabel;
@@ -189,7 +234,7 @@
 - (UILabel *)minuteLabel {
     if (_minuteLabel == nil) {
         UILabel *minuteLabel = [self timeLabel];
-        [self addSubview:minuteLabel];
+        [self.contentView addSubview:minuteLabel];
         _minuteLabel = minuteLabel;
     }
     return _minuteLabel;
@@ -198,7 +243,7 @@
 - (UILabel *)secondLabel {
     if (_secondLabel == nil) {
         UILabel *secondLabel = [self timeLabel];
-        [self addSubview:secondLabel];
+        [self.contentView addSubview:secondLabel];
         _secondLabel = secondLabel;
     }
     return _secondLabel;
@@ -207,7 +252,7 @@
 - (UILabel *)leftColonLabel {
     if (_leftColonLabel == nil) {
         UILabel *leftColonLabel = [self colonLabel];
-        [self addSubview:leftColonLabel];
+        [self.contentView addSubview:leftColonLabel];
         _leftColonLabel = leftColonLabel;
     }
     return _leftColonLabel;
@@ -216,7 +261,7 @@
 - (UILabel *)rigthColonLabel {
     if (_rigthColonLabel == nil) {
         UILabel *rigthColonLabel = [self colonLabel];
-        [self addSubview:rigthColonLabel];
+        [self.contentView addSubview:rigthColonLabel];
         _rigthColonLabel = rigthColonLabel;
     }
     return _rigthColonLabel;
@@ -247,4 +292,5 @@
     
     return label;
 }
+
 @end
