@@ -26,7 +26,10 @@
     self.clockView = [GGClockView clockViewWithTimeBackgroundColor:[UIColor grayColor]
                                                      timeTextColor:[UIColor whiteColor]
                                                         colonColor:nil
-                                                              font:[UIFont systemFontOfSize:12]];
+                                                              font:[UIFont boldSystemFontOfSize:14]];
+    self.clockView.contentMode = GGClockViewContentModeCenter;
+    self.clockView.isDisplayDay = YES;
+    self.clockView.backgroundColor = [UIColor greenColor];
     [self.view addSubview:self.clockView];
     
 }
@@ -34,7 +37,7 @@
 - (void)viewDidLayoutSubviews {
     [super viewDidLayoutSubviews];
     
-    self.clockView.frame = CGRectMake(100, 100, 80, 25);
+    self.clockView.frame = CGRectMake(100, 100, 150, 25);
 }
 
 #pragma mark - 控制方法

@@ -14,6 +14,12 @@
      最低单位是秒
  ***/
 
+typedef NS_ENUM(NSUInteger, GGClockViewContentMode) {
+    GGClockViewContentModeRight,
+    GGClockViewContentModeLeft,
+    GGClockViewContentModeCenter,
+};
+
 @interface GGClockView : UIView
 
 /****************************** 倒计时初始时间 ******************************/
@@ -28,6 +34,10 @@
 @property (nonatomic, strong) UIColor *colonColor;
 /// 字号
 @property (nonatomic, strong) UIFont  *font;
+/// 内容显示位置
+@property (nonatomic, assign) GGClockViewContentMode contentMode;
+/// 当时间超过一天时，是否显示天, 默认否
+@property (nonatomic, assign) BOOL isDisplayDay;
 
 /****************************** 快速构造方法 ******************************/
 + (instancetype)clockViewWithTimeBackgroundColor:(UIColor *)timeBackgroundColor
@@ -45,8 +55,11 @@
                     colonColor:(UIColor *)colonColor
                           font:(UIFont *)font;
 
+
+
 /****************************** 控制 ******************************/
 - (void)start;  // 开始
 - (void)pause;  // 暂停
 - (void)stop;   // 停止
+
 @end
